@@ -12,7 +12,22 @@ void writeMatrix(int** matrix, int rows,const char* filename) {
                 file << ",";
             }
         }
-        if (i < rows - 1) {
+        if (i < 3) {
+            file << std::endl;
+        }
+    }
+    file.close();
+}
+void writeMatrixTime(int**matrix, int rows, int cols, const char* filename) {
+    std::ofstream file(filename);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            file << matrix[i][j];
+            if (j < rows - 1) {
+                file << ",";
+            }
+        }
+        if (i < 3) {
             file << std::endl;
         }
     }
@@ -36,8 +51,7 @@ void writeTime(int** res_time, int rows, const char* filename) {
 }
 
 int** readMatrix(const char* file_name) {
-    std::ifstream file;
-    file.open(file_name);
+    std::ifstream file(file_name);
     int rows = 0;
 
     std::string line;
@@ -68,16 +82,17 @@ int** readMatrix(const char* file_name) {
     }
     return matrix;
 }
-//void clearMemory(int** matrix, int rows) {
-//    for (int i = 0; i < rows; i++) {
-//        delete[] matrix[i];
-//    }
-//    delete[] matrix;
-//}
+void clearMemory(int** matrix, int rows) {
+    for (int i = 0; i < rows; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
 int** mulMatrix(int** matrix, int rows) {
     int** matrix_new = new int* [rows];
-    for (int i = 0, int l = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         int count = 0;
+        matrix_new[i] = new int[rows];
         while (count < rows) {
             int sum = 0;
             for (int j = 0; j < rows; j++) {
@@ -95,55 +110,49 @@ int fixTime(int** matrix, int rows, const char* file_name_res) {
     int** matrix_new = mulMatrix(matrix, rows);
     int end = clock();
     writeMatrix(matrix_new, rows, file_name_res);
-    return (end - start);
+    int result = end - start;
+    return result;
 }
 int main()
 {
     int **matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_500.csv");
     int rows = 500;
-    int count_op = rows;
-    int** matrix_time = new int* [count_op];
+    int count_op = 10;
+    int** matrix_time = new int* [3];
+    for (int i = 0; i < 3; i++) {
+        matrix_time[i] = new int[count_op];
+    }
+    std::cout << std::endl << std::endl << "the process of multiplying matrices of size " << rows << "x" << rows << "..." << std::endl << std::endl;
     for (int i = 0; i < count_op; i++) {
         int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_500.csv");
         matrix_time[0][i] = time_res;
     }
-    writeMatrix(matrix_time, count_op, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_time_500.csv");
-   /* clearMemory(matrix, rows);
-    clearMemory(matrix_time, count_op);*/
+    std::cout << "the process of adding result of multiplying matrices - size " << rows << "x" << rows << " to the file..." << std::endl << std::endl;
+    clearMemory(matrix, rows);
 
-    //matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_1000.csv");
-    //rows = 1000;
-    //count_op = rows;
-    //matrix_time = new int* [count_op];
-    //for (int i = 0; i < count_op; i++) {
-    //    int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_1000.csv");
-    //    matrix_time[1][i] = time_res;
-    //}
-    //writeMatrix(matrix_time, count_op, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_time_1000.csv");
-    //clearMemory(matrix, rows);
-    //clearMemory(matrix_time, count_op);
+    matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_1000.csv");
+    rows = 1000;
+    std::cout << std::endl << std::endl << "the process of multiplying matrices of size " << rows << "x" << rows << "..." << std::endl << std::endl;
+    for (int i = 0; i < count_op; i++) {
+        int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_1000.csv");
+        matrix_time[1][i] = time_res;
+    }
+    std::cout << "the process of adding result of multiplying matrices - size " << rows << "x" << rows << " to the file..." << std::endl << std::endl;
+    clearMemory(matrix, rows);
+ 
 
-    //matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_1500.csv");
-    //rows = 1500;
-    //count_op = rows;
-    //matrix_time = new int* [count_op];
-    //for (int i = 0; i < count_op; i++) {
-    //    int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_1500.csv");
-    //    matrix_time[2][i] = time_res;
-    //}
-    //writeMatrix(matrix_time, count_op, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_time_1500.csv");
-    //clearMemory(matrix, rows);
-    //clearMemory(matrix_time, count_op);
-
-    //matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_2000.csv");
-    //rows = 2000;
-    //count_op = rows;
-    //matrix_time = new int* [count_op];
-    //for (int i = 0; i < count_op; i++) {
-    //    int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_2000.csv");
-    //    matrix_time[3][i] = time_res;
-    //}
-    //writeMatrix(matrix_time, count_op, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_time_2000.csv");
-    //clearMemory(matrix, rows);
-    //clearMemory(matrix_time, count_op);
+    matrix = readMatrix("C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_1500.csv");
+    rows = 1500;
+    std::cout << std::endl << std::endl << "the process of multiplying matrices of size " << rows << "x" << rows << "..." << std::endl << std::endl;
+    for (int i = 0; i < count_op; i++) {
+        int time_res = fixTime(matrix, rows, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_res_1500.csv");
+        matrix_time[2][i] = time_res;
+    }
+    std::cout << "the process of adding result of multiplying matrices - size " << rows << "x" << rows << " to the file..." << std::endl << std::endl;
+    std::cout << "the process of adding time for matrix to the file..." << std::endl << std::endl;
+    writeMatrixTime(matrix_time, 3, count_op, "C:\\Users\\Professional\\.vscode\\lab1_parallel_prog\\lab1_parallel_prog\\matrix_time.csv");
+    clearMemory(matrix, rows);
+    clearMemory(matrix_time, 3);
+    std::cout << "end of the program..." << std::endl << std::endl;
+    return 0;
 }
